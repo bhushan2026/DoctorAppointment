@@ -9,13 +9,14 @@ import Contact from './pages/Contact.jsx'
 import MyProfile from './pages/MyProfile.jsx'
 import MyAppointments from './pages/MyAppointments.jsx'
 import Appointment from './pages/Appointment.jsx'
+import Footer from './components/Footer.jsx'
 // import Footer from './components/Footer.jsx'
 // import Receipt from './pages/Receipt.jsx'
 
 function App() {
 
   return (
-    <>
+    <div className='mx-4 sm:mx-[10%]'>
       <Navbar />
       <Routes>
         <Route path='/' element={<Home />} />
@@ -29,7 +30,8 @@ function App() {
         <Route path='/appointment/:docId' element={<Appointment />} />
         {/* <Route path='/receipt/:id' element={<Receipt/>}/> */}
       </Routes>
-    </>
+      <Footer />
+    </div>
   )
 }
 
