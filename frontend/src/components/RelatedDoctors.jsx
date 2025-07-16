@@ -1,6 +1,6 @@
 import React from 'react'
 
-const RelatedDoctor = () => {
+const RelatedDoctors = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const RelatedDoctor = () => {
   )
 }
 
-export default RelatedDoctor
+export default RelatedDoctors
