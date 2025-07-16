@@ -58,3 +58,5 @@ export const RelatedDoctors = ({ speciality, docId }) => {
     </div>
   )
 }
+
+export default RelatedDoctors
