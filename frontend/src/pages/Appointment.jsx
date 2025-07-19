@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import { assets } from '../assets/assets_frontend/assets'
-import RelatedDoctor from '../components/RelatedDoctors'
+import RelatedDoctor from '../components/RelatedDoctors.jsx'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 const Appointment = () => {
 
@@ -23,8 +25,6 @@ const Appointment = () => {
   }
 
   const getAvailableSlots = async () => {
-    if(!docInfo) return;
-    
     setDocSlots([])
 
     // getting current date
@@ -61,7 +61,7 @@ const Appointment = () => {
         const slotDate = day + '_' + month + '_' + year
         const slotTime = formattedTime
 
-        const isSlotAvailable = docInfo.slots_booked?.[slotDate]?.includes(slotTime) ? false : true
+        const isSlotAvailable = docInfo.slots_booked[slotDate] && docInfo.slots_booked[slotDate].includes(slotTime) ? false : true
 
         if (isSlotAvailable) {
           // add slot to array
@@ -76,13 +76,50 @@ const Appointment = () => {
     }
   }
 
+  const bookAppointment = async () => {
+
+    if (!token) {
+      toast.warn('Login to book appointment')
+      return navigate('/login')
+    }
+
+    try {
+
+      const date = docSlots[slotIndex][0].datetime
+
+      let day = date.getDate()
+      let month = date.getMonth() + 1
+      let year = date.getFullYear()
+
+      const slotDate = day + '_' + month + '_' + year
+
+      const { data } = await axios.post(backendUrl + '/api/user/book-appointment', { docId, slotDate, slotTime }, { headers: { token } })
+
+      if (data.success) {
+        toast.success(data.message)
+        getDoctorsData()
+        navigate('/my-appointments')
+      } else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
   useEffect(() => {
-    fetchDocInfo()
+    fetchDocInfo(docInfo)
   }, [doctors, docId])
 
   useEffect(() => {
     getAvailableSlots()
   }, [docInfo])
+
+  useEffect(() => {
+    console.log(docSlots)
+  }, [docSlots])
 
   return docInfo && (
     <div>
@@ -136,7 +173,7 @@ const Appointment = () => {
           }
         </div>
 
-        <button className="bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6">Book an appointment</button>
+        <button onClick={bookAppointment} className="bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6">Book an appointment</button>
       </div>
 
       {/* Listing Related Doctors */}
